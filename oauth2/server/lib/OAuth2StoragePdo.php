@@ -8,10 +8,10 @@
  * new OAuth2StoragePDO( new PDO('mysql:dbname=mydb;host=localhost', 'user', 'pass') );
  */
 
-require __DIR__ . '/../../../../lib/OAuth2.php';
-require __DIR__ . '/../../../../lib/IOAuth2Storage.php';
-require __DIR__ . '/../../../../lib/IOAuth2GrantCode.php';
-require __DIR__ . '/../../../../lib/IOAuth2RefreshTokens.php';
+require __DIR__ . '/../../lib/OAuth2.php';
+require __DIR__ . '/../../lib/IOAuth2Storage.php';
+require __DIR__ . '/../../lib/IOAuth2GrantCode.php';
+require __DIR__ . '/../../lib/IOAuth2RefreshTokens.php';
 
 /**
  * PDO storage engine for the OAuth2 Library.
@@ -48,10 +48,11 @@ class OAuth2StoragePDO implements IOAuth2GrantCode, IOAuth2RefreshTokens {
 	/**
 	 * Implements OAuth2::__construct().
 	 */
-	public function __construct(PDO $db) {
+	public function __construct() { # PDO $db) {
 		
 		try {
-			$this->db = $db;
+			$dsn = 'mysql:host=localhost;dbname=oauth2';
+			$this->db = new PDO($dsn, 'root', '123456'); # $db;
 		} catch (PDOException $e) {
 			die('Connection failed: ' . $e->getMessage());
 		}
@@ -269,8 +270,7 @@ class OAuth2StoragePDO implements IOAuth2GrantCode, IOAuth2RefreshTokens {
 	protected function getToken($token, $isRefresh = true) {
 		try {
 			$tableName = $isRefresh ? self::TABLE_REFRESH : self::TABLE_TOKENS;
-			$tokenName = $isRefresh ? 'refresh_token' : 'oauth_token';
-			
+			$tokenName = $isRefresh ? 'token' : 'token';
 			$sql = "SELECT $tokenName, client_id, expires, scope, user_id FROM $tableName WHERE token = :token";
 			$stmt = $this->db->prepare($sql);
 			$stmt->bindParam(':token', $token, PDO::PARAM_STR);
@@ -293,7 +293,7 @@ class OAuth2StoragePDO implements IOAuth2GrantCode, IOAuth2RefreshTokens {
 	 * @return string
 	 */
 	protected function hash($client_secret, $client_id) {
-		return hash('blowfish', $client_id . $client_secret);
+		return $client_secret + $client_id; # hash('blowfish', $client_id . $client_secret);
 	}
 
 	/**

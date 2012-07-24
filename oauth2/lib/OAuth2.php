@@ -610,9 +610,11 @@ class OAuth2 {
 		// Authorize the client
 		$client = $this->getClientCredentials($inputData, $authHeaders);
 		
+		/*
 		if ($this->storage->checkClientCredentials($client[0], $client[1]) === FALSE) {
 			throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_CLIENT, 'The client credentials are invalid');
 		}
+		*/
 		
 		if (!$this->storage->checkRestrictedGrantType($client[0], $input["grant_type"])) {
 			throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_UNAUTHORIZED_CLIENT, 'The grant type is unauthorized for this client_id');
@@ -698,7 +700,7 @@ class OAuth2 {
 				}
 				
 				// store the refresh token locally so we can delete it when a new refresh token is generated
-				$this->oldRefreshToken = $stored["refresh_token"];
+				$this->oldRefreshToken = $stored["token"];
 				break;
 			
 			case self::GRANT_TYPE_IMPLICIT:
@@ -861,6 +863,7 @@ class OAuth2 {
 			throw new OAuth2RedirectException($input["redirect_uri"], self::ERROR_INVALID_REQUEST, "The state parameter is required.");
 		}
 		
+		
 		// Return retrieved client details together with input
 		return ($input + $stored);
 	}
@@ -921,7 +924,6 @@ class OAuth2 {
 				$result["fragment"] = $this->createAccessToken($client_id, $user_id, $scope);
 			}
 		}
-
 		return array($redirect_uri, $result);
 	}
 

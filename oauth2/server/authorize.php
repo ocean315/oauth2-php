@@ -18,18 +18,33 @@ require "lib/OAuth2StoragePDO.php";
  * 
  * Below is some psudeo-code to show what you might do:
  * 
+ */
 session_start();
+
+function isLoggedIn() {
+	$username = $_SESSION['username'];
+	if($username) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+function redirectToLoginPage() {
+		header('Location: /oauth2/server/login.php');
+}
+
 if (!isLoggedIn()) {
 	redirectToLoginPage();
 	exit();
 }
- */
 
 $oauth = new OAuth2(new OAuth2StoragePDO());
 
-if ($_POST) {
+if ($_REQUEST) {
 	$userId = $_SESSION['user_id']; // Use whatever method you have for identifying users.
-	$oauth->finishClientAuthorization($_POST["accept"] == "Yep", $userId, $_POST);
+	# $oauth->finishClientAuthorization($_REQUEST["accept"] == "Yep", $userId, $_REQUEST);
+	$oauth->finishClientAuthorization(true, $userId, $_REQUEST);
 }
 
 try {
