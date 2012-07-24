@@ -65,7 +65,7 @@ INSERT INTO `auth_codes` VALUES ('72cf05e508fbb9c1ec03c432fb2b008a0c11b56a', '12
 DROP TABLE IF EXISTS `clients`;
 CREATE TABLE `clients` (
   `client_id` varchar(40) NOT NULL,
-  `client_secret` varchar(20) NOT NULL,
+  `client_secret` varchar(50) NOT NULL,
   `redirect_uri` varchar(255) NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `detail` text,
